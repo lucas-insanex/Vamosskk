@@ -1,0 +1,38 @@
+name: Build Kernel Moto Edge 20 Pro
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Instalar dependências
+      run: |
+        sudo apt update && sudo apt install -y git make bc bison flex libssl-dev libelf-dev gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
+
+    - name: Configurar e Compilar
+      run: |
+        export ARCH=arm64
+        export CROSS_COMPILE=aarch64-linux-gnu-
+        make vendor/kona_defconfig
+        make -j$(nproc) KCFLAGS="-Wno-error"
+        
+        mkdir -p output
+        cp arch/arm64/boot/Image output/
+
+    - name: Salvar resultado
+      uses: actions/upload-artifact@v4
+      with:
+        name: Kernel-Compilado
+        path: output/
+        retention-days: 30
+        
