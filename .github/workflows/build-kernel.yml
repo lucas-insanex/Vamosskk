@@ -23,7 +23,8 @@ jobs:
       run: |
         export ARCH=arm64
         export CROSS_COMPILE=aarch64-linux-gnu-
-        make vendor/kona_defconfig
+        cp arch/arm64/configs/vendor/kona_defconfig .config
+        make olddefconfig
         make -j$(nproc) KCFLAGS="-Wno-error"
         
         mkdir -p output
