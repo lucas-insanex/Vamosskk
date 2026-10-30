@@ -20,12 +20,13 @@ jobs:
         sudo apt update && sudo apt install -y git make bc bison flex libssl-dev libelf-dev gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
 
     - name: Configurar e Compilar
-      run: |
+            run: |
         export ARCH=arm64
         export CROSS_COMPILE=aarch64-linux-gnu-
+        make -j$(nproc) -f /dev/null kernelrelease 2>/dev/null || true
         cp arch/arm64/configs/vendor/kona_defconfig .config
-        make olddefconfig
         make -j$(nproc) KCFLAGS="-Wno-error"
+        
         
         mkdir -p output
         cp arch/arm64/boot/Image output/
